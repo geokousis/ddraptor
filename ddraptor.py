@@ -9,7 +9,7 @@ from itertools import product
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.Data import IUPACData
-import pyahocorasick
+import ahocorasick
 import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -51,7 +51,7 @@ def parse_combos(path):
     return combos
 
 def build_automaton(enzymes):
-    A = pyahocorasick.Automaton()
+    A = ahocorasick.Automaton()
     for idx, (name, motif_iupac, cut_idx) in enumerate(enzymes):
         for seq_pat in expand_iupac(motif_iupac):
             L = len(seq_pat)
