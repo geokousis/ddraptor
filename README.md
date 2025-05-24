@@ -30,13 +30,13 @@ pip install biopython pyahocorasick tqdm pandas matplotlib
 3. Ensure the script is executable:
 
    ```bash
-   chmod +x digest_combo_ddrad.py
+   chmod +x ddraptor.py
    ```
 
 4. (Optional) Copy into your `PATH`:
 
    ```bash
-   cp digest_combo_ddrad.py /usr/local/bin/ddraptor
+   cp ddraptor.py /usr/local/bin/ddraptor
    ```
 
 ---
@@ -89,7 +89,7 @@ TTGACGTA...
 ## Usage
 
 ```bash
-python digest_combo_ddrad.py \
+python ddraptor.py \
   <enzymes.tsv> <combos.tsv> <reference.fasta> \
   --min <MIN_LENGTH> --max <MAX_LENGTH> [options]
 ```
@@ -148,7 +148,7 @@ python digest_combo_ddrad.py \
 ### Default outputs
 
 ```bash
-python digest_combo_ddrad.py enzymes.tsv combos.tsv genome.fasta \
+python ddraptor.py enzymes.tsv combos.tsv genome.fasta \
   --min 200 --max 600
 ```
 
@@ -161,7 +161,7 @@ Produces:
 ### Custom output paths
 
 ```bash
-python digest_combo_ddrad.py enzymes.tsv combos.tsv genome.fasta \
+python ddraptor.py enzymes.tsv combos.tsv genome.fasta \
   --min 150 --max 600 --processes 8 \
   --totals-out=my_totals.tsv \
   --summary-out=my_summary.tsv \
@@ -181,6 +181,6 @@ python digest_combo_ddrad.py enzymes.tsv combos.tsv genome.fasta \
 
 ---
 
-> **License:** MIT
-> **Author:** Georgios Kousis Tsampazis
+> **License:** MIT \
+> **Author:** Georgios Kousis Tsampazis \
 > **Contact:** [georgekousis6@gmail.com](mailto:georgekousis6@gmail.com)
