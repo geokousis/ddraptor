@@ -1,6 +1,6 @@
 # ddRaptor
 
-![logo](ddraptor.png)
+![logo](logo.png)
 
 **ddRaptor** is a tool designed to help with **ddRAD enzyme selection**—it uses Aho–Corasick pattern matching to find cut sites for enzyme pairs, counts the fragments within a size range, and generates summary tables and a heatmap of fragment counts per chromosome.
 ---
