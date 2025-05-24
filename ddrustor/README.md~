@@ -1,0 +1,1 @@
+I’m not very familiar with Rust, so I used ChatGPT to generate this test. In benchmarks, it performed on par with the reference implementation, but—as expected—runs noticeably faster.

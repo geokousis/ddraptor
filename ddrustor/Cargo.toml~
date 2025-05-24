@@ -1,0 +1,10 @@
+[package]
+name = "ddrustor"
+version = "0.1.0"
+edition = "2025"
+
+[dependencies]
+clap = { version = "4.1", features = ["derive"] }
+aho-corasick = "0.7"
+rayon = "1.5"
+num_cpus = "1.13"
