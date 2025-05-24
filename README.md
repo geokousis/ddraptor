@@ -1,7 +1,8 @@
 # ddRaptor
 
-**ddRaptor** is a ddRAD fragment simulator that uses Aho–Corasick pattern matching to find cut sites for enzyme pairs, counts the fragments within a size range, and generates summary tables and a heatmap of fragment counts per chromosome.
+![ddRaptor Logo](ddraptor.png)
 
+**ddRaptor** is a tool designed to help with **ddRAD enzyme selection**—it uses Aho–Corasick pattern matching to find cut sites for enzyme pairs, counts the fragments within a size range, and generates summary tables and a heatmap of fragment counts per chromosome.
 ---
 
 ## Dependencies
@@ -115,6 +116,7 @@ python ddraptor.py \
 
 1. **Combo totals TSV** (`--totals-out`)
    Columns: `combo` | `total_count`
+   * Sorted by `total_count` descending, so the enzyme combination producing the *most fragments*—and thus the best candidate for ddRAD—appears first.
 
    ```tsv
    combo    total_count
