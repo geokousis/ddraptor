@@ -10,7 +10,7 @@ from typing import List
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.Data import IUPACData
-import pyahocorasick
+import ahocorasick
 import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -75,7 +75,7 @@ def build_automaton(enzymes):
     IUPAC‐expanded motifs and their reverse complements.
     Payload per pattern: (enzyme_idx, cut_idx, pattern_length).
     """
-    A = pyahocorasick.Automaton()
+    A = ahocorasick.Automaton()
     for idx, (name, motif_iupac, cut_idx) in enumerate(enzymes):
         for pat in expand_iupac(motif_iupac):
             L = len(pat)

@@ -1,0 +1,6 @@
+Combo1   EcoRI,BamHI
+Combo2   EcoRI,HindIII
+Combo3   BamHI,HindIII
+Combo4   SphI,PstI
+Combo5   EcoRI,PstI
+Combo6   CviQI,NsiI
