@@ -1,4 +1,4 @@
-# ddrustor
+# ddRustor
 
 ![ddrustor logo](https://res.cloudinary.com/dx2dvd6io/image/upload/v1748132030/ddrustor_qcxe2g.png)
 
