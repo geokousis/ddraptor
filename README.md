@@ -180,6 +180,8 @@ python ddraptor.py enzymes.tsv combos.tsv genome.fasta \
   Uses Aho–Corasick plus multiprocessing; scales linearly with CPU cores and number of contigs.
 * **Error handling:**
   Malformed lines in TSVs are skipped with a warning to stderr.
+* **Future goals:**
+  Rust Implementation (ddRustor)
 
 ---
 
