@@ -23,7 +23,6 @@ struct Cli {
     summary_out: PathBuf,
 }
 
-/// IUPAC ambiguity code → possible bases
 fn iupac_map() -> HashMap<char, Vec<char>> {
     let mut m = HashMap::new();
     m.insert('A', vec!['A']); m.insert('C', vec!['C']);
@@ -37,7 +36,6 @@ fn iupac_map() -> HashMap<char, Vec<char>> {
     m
 }
 
-/// Expand an IUPAC‐encoded motif into every concrete sequence.
 fn expand_iupac(motif: &str, map: &HashMap<char, Vec<char>>) -> Vec<String> {
     let default_pool = &map[&'N'];
     let pools: Vec<&Vec<char>> = motif
@@ -49,7 +47,6 @@ fn expand_iupac(motif: &str, map: &HashMap<char, Vec<char>>) -> Vec<String> {
     for pool in pools {
         let mut next = Vec::new();
         for prefix in &acc {
-            // FIXED: iterate Vec<char> directly so `base: char`
             for &base in pool {
                 let mut s = prefix.clone();
                 s.push(base);
@@ -61,7 +58,6 @@ fn expand_iupac(motif: &str, map: &HashMap<char, Vec<char>>) -> Vec<String> {
     acc
 }
 
-/// Reverse‐complement A/C/G/T (other chars → N)
 fn revcomp(s: &str) -> String {
     s.chars()
      .rev()
@@ -72,14 +68,13 @@ fn revcomp(s: &str) -> String {
      .collect()
 }
 
-/// Parse enzymes.tsv (lines: Name<TAB>Motif^Cut)
 fn parse_enzymes(path: &PathBuf) -> io::Result<Vec<(String,String,usize)>> {
     let file = File::open(path)?;
     let reader = BufReader::new(file);
     let mut v = Vec::new();
     for line in reader.lines() {
         let ln = line?.trim().to_string();
-        if ln.is_empty() || ln.starts_with('#') { continue }
+        if ln.is_empty() || ln.starts_with('#') { continue; }
         let parts: Vec<&str> = ln.split_whitespace().collect();
         if parts.len()<2 || !parts[1].contains('^') {
             eprintln!("Skipping malformed enzyme: {}", ln);
@@ -92,7 +87,6 @@ fn parse_enzymes(path: &PathBuf) -> io::Result<Vec<(String,String,usize)>> {
     Ok(v)
 }
 
-/// Parse combos.tsv (lines: ComboName<TAB>EnzA,EnzB)
 fn parse_combos(
     path: &PathBuf,
     idx_map: &HashMap<String,usize>
@@ -102,7 +96,7 @@ fn parse_combos(
     let mut v = Vec::new();
     for line in reader.lines() {
         let ln = line?.trim().to_string();
-        if ln.is_empty() || ln.starts_with('#') { continue }
+        if ln.is_empty() || ln.starts_with('#') { continue; }
         let parts: Vec<&str> = ln.split_whitespace().collect();
         if parts.len()<2 || !parts[1].contains(',') {
             eprintln!("Skipping malformed combo: {}", ln);
@@ -120,7 +114,6 @@ fn parse_combos(
     Ok(v)
 }
 
-/// Read a multi‐FASTA into (header, sequence) pairs.
 fn read_fasta(path: &PathBuf) -> io::Result<Vec<(String,String)>> {
     let file = File::open(path)?;
     let reader = BufReader::new(file);
@@ -145,7 +138,6 @@ fn read_fasta(path: &PathBuf) -> io::Result<Vec<(String,String)>> {
     Ok(recs)
 }
 
-/// Your original ddpositions logic, but counting directly.
 fn count_ddrad_fragments_between(
     cuts1: &Vec<usize>,
     cuts2: &Vec<usize>,
@@ -178,17 +170,14 @@ fn main() -> io::Result<()> {
         .build_global()
         .unwrap();
 
-    // 1) Load enzymes & build name→index map
     let enzymes = parse_enzymes(&cli.enzymes_tsv)?;
     let mut idx_map = HashMap::new();
     for (i,(name,_,_)) in enzymes.iter().enumerate() {
         idx_map.insert(name.clone(), i);
     }
 
-    // 2) Load combos
     let combos = parse_combos(&cli.combos_tsv, &idx_map)?;
 
-    // 3) Build patterns + infos (IUPAC expansion + reverse complements)
     let iupac = iupac_map();
     let mut patterns = Vec::new();
     let mut infos    = Vec::new();
@@ -206,17 +195,14 @@ fn main() -> io::Result<()> {
     }
     let ac = AhoCorasick::new(&patterns);
 
-    // 4) Read FASTA
     let records = read_fasta(&cli.fasta)?;
 
-    // 5) Digest in parallel, using overlapping matches
     let summary: Vec<(String,String,usize)> = records
         .par_iter()
         .flat_map_iter(|(chrom, seq)| {
             let mut cuts: Vec<Vec<usize>> = vec![Vec::new(); enzymes.len()];
-            // `find_overlapping_iter` returns every match, including overlaps
             for mat in ac.find_overlapping_iter(seq) {
-                let (e, cut_idx, pat_len) = infos[mat.pattern()];
+                let (e, cut_idx, _) = infos[mat.pattern()];
                 let pos = mat.start() + cut_idx;
                 cuts[e].push(pos);
             }
@@ -230,7 +216,6 @@ fn main() -> io::Result<()> {
         })
         .collect();
 
-    // 6) Combo totals
     let mut totals: HashMap<String, usize> = HashMap::new();
     for (combo, _, cnt) in &summary {
         *totals.entry(combo.clone()).or_default() += *cnt;
@@ -238,7 +223,6 @@ fn main() -> io::Result<()> {
     let mut combo_order: Vec<String> = totals.keys().cloned().collect();
     combo_order.sort_by_key(|c| usize::MAX - totals[c]);
 
-    // 7) Write totals TSV
     let mut fo = File::create(&cli.totals_out)?;
     writeln!(fo, "combo\ttotal_count")?;
     for combo in &combo_order {
@@ -246,13 +230,11 @@ fn main() -> io::Result<()> {
     }
     eprintln!("Wrote combo totals ➜ {:?}", cli.totals_out);
 
-    // 8) Per‐chromosome summary
     let mut summary_map: HashMap<String, Vec<(String,usize)>> = HashMap::new();
     for (combo, chrom, cnt) in summary {
         summary_map.entry(combo).or_default().push((chrom, cnt));
     }
 
-    // 9) Write summary TSV
     let mut fo2 = File::create(&cli.summary_out)?;
     writeln!(fo2, "combo\tchromosome\tcount")?;
     for combo in &combo_order {
