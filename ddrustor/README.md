@@ -9,5 +9,3 @@ A Rust re-implementation of the reference enzyme-digest tool. Benchmarks show it
 ```bash
 cargo install --path .
 ddrustor enzymes.tsv combos.tsv ref.fasta --min 200 --max 600 --threads 12
-
-
